@@ -1,4 +1,4 @@
-var token string
+var token
 
 async function request(url) {
 	var body = {
@@ -23,7 +23,7 @@ async function request(url) {
 	
 	let jso = await res.text();
 		document.getElementById("resp").innerHTML = jso;
-	 token = response.headers.get('Token');
+	let token = await res.headers.get("Token");
 	
 }
 async function  request2(url) {
@@ -34,7 +34,7 @@ async function  request2(url) {
 		credentials: 'same-origin', // include, *same-origin, omit
 		headers: {
 		  'Content-Type': 'application/json',
-		  'Token': token
+		  'Token': String(token)
 		  // 'Content-Type': 'application/x-www-form-urlencoded',
 		},
 		redirect: 'follow', // manual, *follow, error
