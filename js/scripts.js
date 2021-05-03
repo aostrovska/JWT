@@ -1,3 +1,5 @@
+var token string
+
 async function request(url) {
 	var body = {
 			"username" : document.getElementById("username").value,
@@ -21,7 +23,7 @@ async function request(url) {
 	
 	let jso = await res.text();
 		document.getElementById("resp").innerHTML = jso;
-
+	 token = response.headers.get('Token');
 	
 }
 async function  request2(url) {
@@ -31,7 +33,8 @@ async function  request2(url) {
 		cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
 		credentials: 'same-origin', // include, *same-origin, omit
 		headers: {
-		  'Content-Type': 'application/json'
+		  'Content-Type': 'application/json',
+		  'Token': token
 		  // 'Content-Type': 'application/x-www-form-urlencoded',
 		},
 		redirect: 'follow', // manual, *follow, error
