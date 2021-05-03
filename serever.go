@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"time"
+	 "os"
+	 "github.com/dgrijalva/jwt-go"
 )
 
 
@@ -16,7 +19,9 @@ type logPas struct{
 }
 
 var user = logPas{"username", "password"}
+
 var token string
+var times int64
 
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
@@ -36,14 +41,46 @@ func Handler(w http.ResponseWriter, req *http.Request) {
 		if err != nil{
 			return 
 		}
-		fmt.Println("handler1", person)
 		if (person.Username == user.Username)&&(person.Password == user.Password){
-			token = "12345"
+			token, err = CreateToken(1)
+			if err != nil{
+				return
+			}
+			w.Header().Set("Token", token)
 		}else {
-			token = " "
 			io.WriteString(w, "incorrect login")
 		}
 	}
+	fmt.Println("req1:",(*req).Header.Get("Token"))
+}
+
+func CreateToken(userId uint64) (string, error) {
+  var err error
+  os.Setenv("ACCESS_SECRET", "jdnfksdmfksd")
+  atClaims := jwt.MapClaims{}
+  atClaims["authorized"] = true
+  atClaims["user_id"] = userId
+  atClaims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+  times =  time.Now().Add(time.Minute * 15).Unix()
+  at := jwt.NewWithClaims(jwt.SigningMethodHS256, atClaims)
+  token, err := at.SignedString([]byte(os.Getenv("ACCESS_SECRET")))
+  if err != nil {
+     return "", err
+  }
+  return token, nil
+}
+
+func getTokenRemainingValidity(timestamp interface{}) int {
+    var expireOffset = 540
+    if validity, ok := timestamp.(int64); ok {
+        tm := time.Unix(int64(validity), 0)
+        remainder := tm.Sub(time.Now())
+
+        if remainder > 0 {
+            return int(remainder.Seconds() + float64(expireOffset))
+        }
+    }
+    return expireOffset
 }
 
 func Handler2(w http.ResponseWriter, req *http.Request) {
@@ -51,7 +88,8 @@ func Handler2(w http.ResponseWriter, req *http.Request) {
 	if (*req).Method == "OPTIONS" {
 		w.WriteHeader(204)
 	}else if req.Method == "GET" {
-		if (token == "12345"){
+		fmt.Println("req:",(*req).Header.Get("Token"))
+		if ((*req).Header.Get("Token") == token)&&(getTokenRemainingValidity(times)>0){
 			io.WriteString(w, "you succcessfuly gained data")
 		}else{
 			io.WriteString(w, "401")
