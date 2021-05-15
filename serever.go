@@ -27,6 +27,7 @@ func setupResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
     (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
     (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Token")
+    (*w).Header().Set("Access-Control-Expose-Headers", "Token")
 }
 
 func Handler(w http.ResponseWriter, req *http.Request) {
@@ -66,6 +67,7 @@ func CreateToken(userId uint64) (string, error) {
   if err != nil {
      return "", err
   }
+   fmt.Println(token)
   return token, nil
 }
 
