@@ -67,7 +67,7 @@ func CreateToken(userId uint64) (string, error) {
   if err != nil {
      return "", err
   }
-   fmt.Println(token)
+
   return token, nil
 }
 
@@ -89,7 +89,6 @@ func Handler2(w http.ResponseWriter, req *http.Request) {
 	if (*req).Method == "OPTIONS" {
 		w.WriteHeader(204)
 	}else if req.Method == "GET" {
-		fmt.Println("req:",(*req).Header.Get("Token"))
 		if ((*req).Header.Get("Token") == token)&&(getTokenRemainingValidity(times)>0){
 			io.WriteString(w, "you succcessfuly gained data")
 		}else{

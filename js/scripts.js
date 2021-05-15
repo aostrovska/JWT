@@ -23,7 +23,13 @@ async function request(url) {
 	
 	let jso = await res.text();
 		document.getElementById("resp").innerHTML = jso;
-	let token = await res.headers.get("Token");
+    
+    let h = await res.headers;
+    console.log(h)
+
+    token = await h.get("Token")
+    console.log(token)
+
 	
 }
 async function  request2(url) {
